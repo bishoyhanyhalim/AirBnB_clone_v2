@@ -140,9 +140,7 @@ class HBNBCommand(cmd.Cmd):
                         setattr(new_instance, key, float(value))
                     elif value.isdigit():
                         setattr(new_instance, key, int(value))
-                    else:
-                        setattr(new_instance, key, value)
-                except (NameError, ValueError):
+                except (NameError, ValueError, SyntaxError):
                     continue
         else:
             class_name = args
