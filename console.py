@@ -118,28 +118,38 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-        args_list = args.split(' ')
-        class_name = args_list[0]
-        params = args_list[1:]
+        if '=' in args and ' ' in args:
+            args_list = args.split(' ')
+            class_name = args_list[0]
+            params = args_list[1:]
 
-        if class_name not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[class_name]()
+            if class_name not in HBNBCommand.classes:
+                print("** class doesn't exist **")
+                return
+            new_instance = HBNBCommand.classes[class_name]()
 
-        for param in params:
-            key, value = param.split('=')
-            key = key.replace('_', ' ')
+            for param in params:
+                try:
+                    key, value = tuple(param.split('='))
+                    key = key.replace('_', ' ')
 
-            if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1]
-                value = value.replace('\\', "")
-            if '.' in value:
-                setattr(new_instance, key, float(value))
-            elif value.isdigit():
-                setattr(new_instance, key, int(value))
-            else:
-                setattr(new_instance, key, value)
+                    if value.startswith('"') and value.endswith('"'):
+                        value = value[1:-1]
+                        value = value.replace('\\', "")
+                    if '.' in value:
+                        setattr(new_instance, key, float(value))
+                    elif value.isdigit():
+                        setattr(new_instance, key, int(value))
+                    else:
+                        setattr(new_instance, key, value)
+                except (NameError, ValueError):
+                    continue
+        else:
+            class_name = args
+            if class_name not in HBNBCommand.classes:
+                print("** class doesn't exist **")
+                return
+            new_instance = HBNBCommand.classes[class_name]()
 
         storage.save()
         print(new_instance.id)
