@@ -131,15 +131,16 @@ class HBNBCommand(cmd.Cmd):
             for param in params:
                 try:
                     key, value = tuple(param.split('='))
-                    key = key.replace('_', ' ')
 
                     if value.startswith('"') and value.endswith('"'):
                         value = value[1:-1]
-                        value = value.replace('\\', "")
+                        value = value.strip('"').replace('_', " ")
                     if '.' in value:
                         setattr(new_instance, key, float(value))
                     elif value.isdigit():
                         setattr(new_instance, key, int(value))
+                    else:
+                        setattr(new_instance, key, value)
                 except (NameError, ValueError, SyntaxError):
                     continue
         else:
