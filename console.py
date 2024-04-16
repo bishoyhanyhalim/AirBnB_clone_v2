@@ -135,12 +135,15 @@ class HBNBCommand(cmd.Cmd):
                     if value.startswith('"') and value.endswith('"'):
                         value = value[1:-1]
                         value = value.strip('"').replace('_', " ")
-                    if '.' in value:
+                    if '@' in value and '.' in value:
+                        setattr(new_instance, key, value)
+                    elif '.' in value:
                         setattr(new_instance, key, float(value))
                     elif value.isdigit():
                         setattr(new_instance, key, int(value))
                     else:
                         setattr(new_instance, key, value)
+                    setattr(new_instance, key, value)
                 except (NameError, ValueError, SyntaxError):
                     continue
         else:
