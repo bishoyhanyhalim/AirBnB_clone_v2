@@ -143,7 +143,6 @@ class HBNBCommand(cmd.Cmd):
                         setattr(new_instance, key, int(value))
                     else:
                         setattr(new_instance, key, value)
-                    setattr(new_instance, key, value)
                 except (NameError, ValueError, SyntaxError):
                     continue
         else:
