@@ -10,7 +10,6 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-import shlex
 
 
 class HBNBCommand(cmd.Cmd):
@@ -120,7 +119,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         if '=' in args and ' ' in args:
-            args_list = shlex.split(args)
+            args_list = args.split()
             class_name = args_list[0]
             params = args_list[1:]
 
