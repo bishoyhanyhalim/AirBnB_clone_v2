@@ -75,6 +75,7 @@ class test_Place(test_basemodel):
 
     @unittest.skipIf(type(models.storage) == DBStorage, "")
     def test_create_kwargs(self):
+        self.console = HBNBCommand()
         with patch('sys.stdout', new=StringIO()) as out:
             in_put = ('create Place city_id="0001" user_id="0001" '
                       'name="My_little_house" '
