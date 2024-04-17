@@ -4,6 +4,8 @@ import unittest
 from io import StringIO
 from console import HBNBCommand
 from os import getenv
+import models
+from models.engine.db_storage import DBStorage
 
 
 class TestHBNBCommand(TestCase):
@@ -13,7 +15,7 @@ class TestHBNBCommand(TestCase):
     def tearDown(self):
         self.console = None
 
-    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') == 'db', "Testing DBstorage")
+    @unittest.skipIf(type(models.storage) == DBStorage, "Testing DBstorage")
     def test_create_kwargs(self):
         with patch('sys.stdout', new=StringIO()) as out:
             in_put = ('create Place city_id="0001" user_id="0001" '
