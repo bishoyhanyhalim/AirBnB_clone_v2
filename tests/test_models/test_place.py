@@ -2,6 +2,11 @@
 """ """
 from tests.test_models.test_base_model import test_basemodel
 from models.place import Place
+from io import StringIO
+from unittest.mock import patch
+import unittest
+import models
+from models.engine.db_storage import DBStorage
 
 
 class test_Place(test_basemodel):
@@ -67,3 +72,27 @@ class test_Place(test_basemodel):
         """ """
         new = self.value()
         self.assertEqual(type(new.amenity_ids), list)
+
+    @unittest.skipIf(type(models.storage) == DBStorage, "")
+    def test_create_kwargs(self):
+        with patch('sys.stdout', new=StringIO()) as out:
+            in_put = ('create Place city_id="0001" user_id="0001" '
+                      'name="My_little_house" '
+                      'number_rooms=4 number_bathrooms=2 max_guest=10 '
+                      'price_by_night=300 '
+                      'latitude=b longitude=-122.431297')
+            self.console.onecmd(in_put)
+            out_create = out.getvalue().strip()
+        with patch("sys.stdout", new=StringIO()) as out:
+            self.console.onecmd("all Place")
+            out_all = out.getvalue()
+            self.assertIn(out_create, out_all)
+            self.assertIn("'city_id': '0001'", out_all)
+            self.assertIn("'user_id': '0001'", out_all)
+            self.assertIn("'number_bathrooms': 2", out_all)
+            self.assertIn("'price_by_night': 300", out_all)
+            self.assertIn("'name': 'My little house'", out_all)
+            self.assertIn("'max_guest': 10", out_all)
+            self.assertIn("'number_rooms': 4", out_all)
+            self.assertIn("'longitude': -122.431297", out_all)
+            self.assertNotIn("'latitude': b", out_all)
