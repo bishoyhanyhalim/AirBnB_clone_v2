@@ -6,13 +6,24 @@ from sqlalchemy.orm import relationship
 import models
 from models.review import Review
 from os import getenv
-import models
+from models.amenity import Amenity
 import shlex
+
+place_amenity = Table("place_amenity", Base.metadata,
+                      Column("place_id", String(60),
+                             ForeignKey("places.id"),
+                             primary_key=True,
+                             nullable=False),
+                      Column("amenity_id", String(60),
+                             ForeignKey("amenities.id"),
+                             primary_key=True,
+                             nullable=False))
 
 
 class Place(BaseModel, Base):
     """ A place class for user"""
     __tablename__ = 'places'
+
     city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
     user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
     name = Column(String(128), nullable=False)
@@ -29,10 +40,14 @@ class Place(BaseModel, Base):
         reviews = relationship("Review", cascade='all, delete',
                                backref="place")
 
+        amenities = relationship("Amenity", secondary=place_amenity,
+                                 viewonly=False,
+                                 back_populates="place_amenities")
+
     else:
         @property
         def reviews(self):
-            """ Returns list of reviews.id """
+            """ Returns list of id """
             var = models.storage.all()
             aray_stro = []
             finally_result = []
@@ -45,3 +60,15 @@ class Place(BaseModel, Base):
                 if (chars.place_id == self.id):
                     finally_result.append(chars)
             return (finally_result)
+
+####
+        @property
+        def amenities(self):
+            """ Returns the amenity of ids """
+            return self.amenity_ids
+
+        @amenities.setter
+        def amenities(self, obj=None):
+            """ this return result finally """
+            if type(obj) is Amenity and obj.id not in self.amenity_ids:
+                self.amenity_ids.append(obj.id)
