@@ -15,7 +15,7 @@ class TestHBNBCommand(TestCase):
     def tearDown(self):
         self.console = None
 
-    @unittest.skipIf(type(models.storage) == DBStorage, "Testing DBstorage")
+    @unittest.skipIf(type(models.storage) == DBStorage, "")
     def test_create_kwargs(self):
         with patch('sys.stdout', new=StringIO()) as out:
             in_put = ('create Place city_id="0001" user_id="0001" '
