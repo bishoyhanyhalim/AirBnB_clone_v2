@@ -135,7 +135,6 @@ class HBNBCommand(cmd.Cmd):
                     if value.startswith('"') and value.endswith('"'):
                         value = value[1:-1]
                         value = value.strip('"').replace('_', " ")
-                    if '@' in value and '.' in value:
                         setattr(new_instance, key, value)
                     elif '.' in value:
                         setattr(new_instance, key, float(value))
