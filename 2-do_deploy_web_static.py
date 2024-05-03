@@ -6,7 +6,6 @@ an archive to web servers
 
 from fabric.api import local, run, env, put
 from os.path import exists
-from datetime import datetime
 
 env.hosts = ['100.25.160.38', '18.210.33.119']
 
