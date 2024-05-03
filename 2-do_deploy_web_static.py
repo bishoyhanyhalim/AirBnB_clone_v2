@@ -23,9 +23,7 @@ def do_deploy(archive_path):
         deploy_path = "/data/web_static/releases/"
         tmp_path = "/tmp/"
 
-        put_res = put(archive_path, tmp_path)
-        if put_res.failed:
-            return False
+        put(archive_path, tmp_path)
         run(f"mkdir -p {deploy_path}{folder}")
         run(f"tar -xzf {tmp_path}{archive} -C {deploy_path}{folder}")
         run(f"rm {tmp_path}{archive}")
