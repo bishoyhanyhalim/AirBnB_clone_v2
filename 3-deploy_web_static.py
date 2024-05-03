@@ -1,13 +1,32 @@
 #!/usr/bin/python3
 """
-A Fabric script  that distributes
-an archive to web servers
+A Fabric script that generates a .tgz archive
+from the contents of the web_static folder
 """
 
-from fabric.api import local, run, env, put
+from fabric.api import *
+from datetime import datetime
 import os.path
 
-env.hosts = ['18.208.120.216', '100.25.110.24']
+
+def do_pack():
+    """
+    Generates a .tgz archive from the
+    contents of the web_static folder of
+    your AirBnB Clone repo
+    """
+    now = datetime.now()
+    file_name = (
+        f"web_static_{now.year}{now.month}"
+        f"{now.day}{now.hour}{now.minute}{now.second}.tgz"
+    )
+    local("mkdir -p versions")
+    result = local(f"tar -cvzf versions/{file_name} web_static")
+    path = f"versions/{file_name}.tgz"
+    if result.succeeded:
+        return path
+    else:
+        return None
 
 
 def do_deploy(archive_path):
@@ -35,3 +54,13 @@ def do_deploy(archive_path):
         return True
     except Exception:
         return False
+
+
+def deploy():
+    """
+    Deploys the archive to web servers
+    """
+    archive_path = do_pack()
+    if archive_path is None:
+        return False
+    return do_deploy(archive_path)
