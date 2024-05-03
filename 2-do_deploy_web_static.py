@@ -35,5 +35,5 @@ def do_deploy(archive_path):
         run(f"rm -f /data/web_static/current")
         run(f"ln -s {deploy_path}{folder} /data/web_static/current")
         return True
-    except Exception as e:
+    except:
         return False
