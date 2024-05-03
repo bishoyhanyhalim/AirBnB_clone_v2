@@ -10,9 +10,9 @@ sudo bash -c 'echo "<html>
   <body>
     Holberton School
   </body>
-</html>" > /data/web_static/current/index.html'
+</html>" > /data/web_static/releases/test/index.html'
 
-sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
+sudo ln -sf /data/web_static/releases/test /data/web_static/current
 sudo chown -R ubuntu:ubuntu /data/
 config="/etc/nginx/sites-available/default"
 new_location="\\\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}\n"
