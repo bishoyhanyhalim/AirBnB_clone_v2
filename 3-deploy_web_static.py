@@ -8,9 +8,7 @@ from fabric.api import *
 from datetime import datetime
 import os.path
 
-env.hosts = ['18.208.120.216', '100.25.110.24']
-env.user = 'ubuntu'
-env.key_filename = '~/.ssh/school'
+
 
 
 def do_pack():
@@ -27,16 +25,18 @@ def do_pack():
     local("mkdir -p versions")
     result = local(f"tar -cvzf versions/{file_name} web_static")
     path = f"versions/{file_name}.tgz"
-    if result.succeeded:
-        return path
-    else:
+    if result.failed:
         return None
+    return path
 
 
 def do_deploy(archive_path):
     """
     Distributes an archive to web servers
     """
+    env.hosts = ['18.208.120.216', '100.25.110.24']
+    env.user = 'ubuntu'
+    env.key_filename = '~/.ssh/school'
     if os.path.isfile(archive_path) is False:
         return False
 
@@ -45,21 +45,31 @@ def do_deploy(archive_path):
     deploy_path = "/data/web_static/releases/"
     tmp_path = "/tmp/"
 
+    print("Executing task 'do_deploy'")
+    print(f"put: {archive_path} -> {tmp_path}{archive}")
     if put(archive_path, tmp_path).failed is True:
         return False
+    
+    print(f"run: mkdir -p {deploy_path}{folder}")
     if run(f"mkdir -p {deploy_path}{folder}").failed is True:
         return False
+    print(f"run: tar -xzf {tmp_path}{archive} -C {deploy_path}{folder}")
     if run(f"tar -xzf {tmp_path}{archive} -C {deploy_path}{folder}").failed:
         return False
+    print(f"run: rm {tmp_path}{archive}")
     if run(f"rm {tmp_path}{archive}").failed is True:
         return False
+    print(f"run: mv {deploy_path}{folder}/web_static/* {deploy_path}{folder}")
     if run(f"mv {deploy_path}{folder}/web_static/* "
            f"{deploy_path}{folder}").failed:
         return False
+    print(f"run: rm -rf {deploy_path}{folder}/web_static")
     if run(f"rm -rf {deploy_path}{folder}/web_static").failed:
         return False
+    print(f"run: rm -rf /data/web_static/current")
     if run(f"rm -rf /data/web_static/current").failed:
         return False
+    print(f"run: ln -s {deploy_path}{folder}/ /data/web_static/current")
     if run(f"ln -s {deploy_path}{folder}/ /data/web_static/current").failed:
         return False
     print("New version deployed!")
