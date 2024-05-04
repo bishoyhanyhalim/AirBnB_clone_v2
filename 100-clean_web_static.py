@@ -29,6 +29,7 @@ def do_clean(number=0):
 
     local_archs = sorted(os.listdir('versions'))
     deletes = local_archs[:-number]
-    for arch in local_archs:
-        if arch in deletes and arch.startswith('web_static_'):
-            local(f"sudo rm -rf versions/{arch}")
+    with lcd("versions"):
+        for arch in local_archs:
+            if arch in deletes and arch.startswith('web_static_'):
+                local(f"sudo rm {arch}")
