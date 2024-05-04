@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 """
-Fab module.
+Deletes out-of-date archives
 """
+
 import os
 from fabric.api import *
 
