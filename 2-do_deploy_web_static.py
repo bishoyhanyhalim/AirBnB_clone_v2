@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """
-A Fabric script  that distributes
-an archive to web servers
+this is tsak 2
 """
 
 from fabric.api import local, run, env, put

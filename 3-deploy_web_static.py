@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """
-A Fabric script that generates a .tgz archive
-from the contents of the web_static folder
+this is task 3
 """
 
 from fabric.api import *
