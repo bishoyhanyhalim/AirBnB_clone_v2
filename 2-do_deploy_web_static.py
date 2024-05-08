@@ -1,29 +1,27 @@
 #!/usr/bin/python3
 """Fabric script for task 2"""
 
-import os.path
-from fabric.api import *
-
+from fabric.api import put, run, env
+from os.path import exists
 env.hosts = ['54.175.199.26', '107.23.117.21']
 
 
 def do_deploy(archive_path):
-    """this func for task 2"""
-    if os.path.isfile(archive_path) is False:
+    """distribu the servers"""
+    if exists(archive_path) is False:
         return False
     try:
-        file_name = archive_path.split("/")[-1]
-        no_ext = file_name.split(".")[0]
-        full_path = "/data/web_static/releases/{}/".format(no_ext)
-        symlink = "/data/web_static/current"
-        put(archive_path, "/tmp/")
-        run("mkdir -p {}".format(full_path))
-        run("tar -xzf /tmp/{} -C {}".format(file_name, full_path))
-        run("rm /tmp/{}".format(file_name))
-        run("mv {}web_static/* {}".format(full_path, full_path))
-        run("rm -rf {}web_static".format(full_path))
-        run("rm -rf {}".format(symlink))
-        run("ln -s {} {}".format(full_path, symlink))
+        file_n = archive_path.split("/")[-1]
+        no_ext = file_n.split(".")[0]
+        path = "/data/web_static/releases/"
+        put(archive_path, '/tmp/')
+        run('mkdir -p {}{}/'.format(path, no_ext))
+        run('tar -xzf /tmp/{} -C {}{}/'.format(file_n, path, no_ext))
+        run('rm /tmp/{}'.format(file_n))
+        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
+        run('rm -rf {}{}/web_static'.format(path, no_ext))
+        run('rm -rf /data/web_static/current')
+        run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
         return True
-    except Exception:
+    except:
         return False
