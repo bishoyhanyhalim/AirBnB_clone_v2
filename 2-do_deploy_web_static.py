@@ -1,38 +1,47 @@
 #!/usr/bin/python3
+"""Compress the servers
 """
-this is tsak 2
-"""
+from fabric.api import *
+from datetime import datetime
+from os import path
 
-from fabric.api import local, run, env, put
-import os.path
 
-env.hosts = ['52.87.230.55', '100.25.150.51']
+env.hosts = ['107.23.117.21', '54.175.199.26']
 env.user = 'ubuntu'
 env.key_filename = '~/.ssh/school'
 
 
 def do_deploy(archive_path):
+    """Deploy all the files
     """
-    Distributes an archive to web servers
-    """
-    if os.path.isfile(archive_path) is False:
-        return False
-
     try:
-        archive = archive_path.split('/')[-1]
-        folder = archive.split('.')[0]
-        deploy_path = "/data/web_static/releases/"
-        tmp_path = "/tmp/"
+        if not (path.exists(archive_path)):
+            return False
 
-        put(archive_path, tmp_path)
-        run(f"mkdir -p {deploy_path}{folder}/")
-        run(f"tar -xzf {tmp_path}{archive} -C {deploy_path}{folder}/")
-        run(f"rm {tmp_path}{archive}")
-        run(f"mv {deploy_path}{folder}/web_static/* {deploy_path}{folder}/")
-        run(f"rm -rf {deploy_path}{folder}/web_static")
-        run(f"rm -rf /data/web_static/current")
-        run(f"ln -s {deploy_path}{folder}/ /data/web_static/current")
-        print("New version deployed!")
-        return True
-    except Exception:
+        put(archive_path, '/tmp/')
+
+        timestamp = archive_path[-18:-4]
+        run('sudo mkdir -p /data/web_static/\
+releases/web_static_{}/'.format(timestamp))
+
+        run('sudo tar -xzf /tmp/web_static_{}.tgz -C \
+/data/web_static/releases/web_static_{}/'
+            .format(timestamp, timestamp))
+
+        run('sudo rm /tmp/web_static_{}.tgz'.format(timestamp))
+
+        run('sudo mv /data/web_static/releases/web_static_{}/web_static/* \
+/data/web_static/releases/web_static_{}/'.format(timestamp, timestamp))
+
+        run('sudo rm -rf /data/web_static/releases/\
+web_static_{}/web_static'
+            .format(timestamp))
+
+        run('sudo rm -rf /data/web_static/current')
+
+        run('sudo ln -s /data/web_static/releases/\
+web_static_{}/ /data/web_static/current'.format(timestamp))
+    except:
         return False
+
+    return True
