@@ -1,47 +1,29 @@
 #!/usr/bin/python3
-"""Compress the servers
-"""
+"""Fabric script for task 2"""
+
+import os.path
 from fabric.api import *
-from datetime import datetime
-from os import path
 
-
-env.hosts = ['107.23.117.21', '54.175.199.26']
-env.user = 'ubuntu'
-env.key_filename = '~/.ssh/school'
+env.hosts = ['54.175.199.26', '107.23.117.21']
 
 
 def do_deploy(archive_path):
-    """Deploy all the files
-    """
-    try:
-        if not (path.exists(archive_path)):
-            return False
-
-        put(archive_path, '/tmp/')
-
-        timestamp = archive_path[-18:-4]
-        run('sudo mkdir -p /data/web_static/\
-releases/web_static_{}/'.format(timestamp))
-
-        run('sudo tar -xzf /tmp/web_static_{}.tgz -C \
-/data/web_static/releases/web_static_{}/'
-            .format(timestamp, timestamp))
-
-        run('sudo rm /tmp/web_static_{}.tgz'.format(timestamp))
-
-        run('sudo mv /data/web_static/releases/web_static_{}/web_static/* \
-/data/web_static/releases/web_static_{}/'.format(timestamp, timestamp))
-
-        run('sudo rm -rf /data/web_static/releases/\
-web_static_{}/web_static'
-            .format(timestamp))
-
-        run('sudo rm -rf /data/web_static/current')
-
-        run('sudo ln -s /data/web_static/releases/\
-web_static_{}/ /data/web_static/current'.format(timestamp))
-    except:
+    """this func for task 2"""
+    if os.path.isfile(archive_path) is False:
         return False
-
-    return True
+    try:
+        file_name = archive_path.split("/")[-1]
+        no_ext = file_name.split(".")[0]
+        full_path = "/data/web_static/releases/{}/".format(no_ext)
+        symlink = "/data/web_static/current"
+        put(archive_path, "/tmp/")
+        run("mkdir -p {}".format(full_path))
+        run("tar -xzf /tmp/{} -C {}".format(file_name, full_path))
+        run("rm /tmp/{}".format(file_name))
+        run("mv {}web_static/* {}".format(full_path, full_path))
+        run("rm -rf {}web_static".format(full_path))
+        run("rm -rf {}".format(symlink))
+        run("ln -s {} {}".format(full_path, symlink))
+        return True
+    except Exception:
+        return False
