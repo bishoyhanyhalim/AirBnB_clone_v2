@@ -25,7 +25,7 @@ class FileStorage:
     def all(self, cls=None):
         if not cls:
             return self.__objects
-        elif type(cls) == str:
+        elif type(cls) is str:
             return {k: v for k, v in self.__objects.items()
                     if v.__class__.__name__ == cls}
         else:
@@ -73,7 +73,7 @@ class FileStorage:
 
     def count(self, cls=None):
         total = 0
-        if type(cls) == str and cls in classes:
+        if type(cls) is str and cls in classes:
             total = len(self.all(cls))
         elif cls is None:
             total = len(self.__objects)
