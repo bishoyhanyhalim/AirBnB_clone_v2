@@ -1,25 +1,34 @@
 #!/usr/bin/python3
-""" State Module for HBNB project """
-from models.base_model import BaseModel, Base
 import models
-from sqlalchemy import String, Column
+from models.base_model import BaseModel, Base
+from os import getenv
+import sqlalchemy
+from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
-from models.city import City
-import os
 
 
 class State(BaseModel, Base):
-    """ State class """
-    __tablename__ = 'states'
-    name = Column(String(128), nullable=False)
-    cities = relationship("City", cascade="all, delete", backref="state")
+    """Representation of state """
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        __tablename__ = 'states'
+        name = Column(String(128),
+                      nullable=False)
+        cities = relationship("City", cascade="all, delete",
+                              backref="states")
+    else:
+        name = ""
 
-    @property
-    def cities(self):
-        """Getter return the list"""
-        values_city = models.storage.all("City").values()
-        list_city = []
-        for city in values_city:
-            if city.state_id == self.id:
-                list_city.append(city)
-        return list_city
+    def __init__(self, *args, **kwargs):
+        """initializes state"""
+        super().__init__(*args, **kwargs)
+
+    if getenv('HBNB_TYPE_STORAGE') != 'db':
+        @property
+        def cities(self):
+            """getter the cities"""
+            values_city = models.storage.all("City").values()
+            list_city = []
+            for city in values_city:
+                if city.state_id == self.id:
+                    list_city.append(city)
+            return list_city
