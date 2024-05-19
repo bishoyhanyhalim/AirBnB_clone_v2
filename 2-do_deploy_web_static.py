@@ -1,38 +1,27 @@
 #!/usr/bin/python3
-"""
-this is tsak 2
-"""
+"""Fabric script for task 2"""
 
-from fabric.api import local, run, env, put
-import os.path
-
-env.hosts = ['52.87.230.55', '100.25.150.51']
-env.user = 'ubuntu'
-env.key_filename = '~/.ssh/school'
+from fabric.api import put, run, env
+from os.path import exists
+env.hosts = ['54.175.199.26', '107.23.117.21']
 
 
 def do_deploy(archive_path):
-    """
-    Distributes an archive to web servers
-    """
-    if os.path.isfile(archive_path) is False:
+    """distribu the servers"""
+    if exists(archive_path) is False:
         return False
-
     try:
-        archive = archive_path.split('/')[-1]
-        folder = archive.split('.')[0]
-        deploy_path = "/data/web_static/releases/"
-        tmp_path = "/tmp/"
-
-        put(archive_path, tmp_path)
-        run(f"mkdir -p {deploy_path}{folder}/")
-        run(f"tar -xzf {tmp_path}{archive} -C {deploy_path}{folder}/")
-        run(f"rm {tmp_path}{archive}")
-        run(f"mv {deploy_path}{folder}/web_static/* {deploy_path}{folder}/")
-        run(f"rm -rf {deploy_path}{folder}/web_static")
-        run(f"rm -rf /data/web_static/current")
-        run(f"ln -s {deploy_path}{folder}/ /data/web_static/current")
-        print("New version deployed!")
+        file_n = archive_path.split("/")[-1]
+        no_ext = file_n.split(".")[0]
+        path = "/data/web_static/releases/"
+        put(archive_path, '/tmp/')
+        run('mkdir -p {}{}/'.format(path, no_ext))
+        run('tar -xzf /tmp/{} -C {}{}/'.format(file_n, path, no_ext))
+        run('rm /tmp/{}'.format(file_n))
+        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
+        run('rm -rf {}{}/web_static'.format(path, no_ext))
+        run('rm -rf /data/web_static/current')
+        run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
         return True
-    except Exception:
+    except:
         return False
