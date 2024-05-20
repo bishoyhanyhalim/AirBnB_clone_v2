@@ -72,7 +72,7 @@ class DBStorage:
             self.__session.delete(obj)
 
     def close(self):
-        self.__session.remove()
+        self.__session.close()
 
     def get(self, cls, id):
         if cls is not None and type(cls) is str and id is not None and\
